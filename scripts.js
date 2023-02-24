@@ -14,6 +14,9 @@ const sizes = {
     height: window.innerHeight
 }
 const textureloader=new THREE.TextureLoader()
+
+//Door Textures
+
 const alphatextures=textureloader.load('textures/door/alpha.jpg')
 const ambienttextures=textureloader.load('textures/door/ambientOcclusion.jpg')
 const heighttextures=textureloader.load('textures/door/height.jpg')
@@ -21,10 +24,16 @@ const normaltextures=textureloader.load('textures/door/normal.jpg')
 const metalnesstextures=textureloader.load('textures/door/metalness.jpg')
 const roughtextures=textureloader.load('textures/door/roughness.jpg')
 const textures=textureloader.load('textures/door/color.jpg')
+
+//Brick Textures
+
 const ambientbricks=textureloader.load('textures/bricks/ambientOcclusion.jpg')
 const normalbricks=textureloader.load('textures/bricks/normal.jpg')
 const roughbricks=textureloader.load('textures/bricks/roughness.jpg')
 const bricks=textureloader.load('textures/bricks/color.jpg')
+
+//Grass
+
 const ambientgrass=textureloader.load('textures/grass/ambientOcclusion.jpg')
 const normalgrass=textureloader.load('textures/grass/normal.jpg')
 const roughgrass=textureloader.load('textures/grass/roughness.jpg')
@@ -41,6 +50,9 @@ ambientgrass.wrapT=THREE.RepeatWrapping
 normalgrass.wrapT=THREE.RepeatWrapping
 roughgrass.wrapT=THREE.RepeatWrapping
 grass.wrapT=THREE.RepeatWrapping
+
+
+
 window.addEventListener('resize',() =>
 {
     sizes.width=window.innerWidth
@@ -49,11 +61,15 @@ window.addEventListener('resize',() =>
     camera.updateProjectionMatrix()
     renderer.setSize(sizes.width, sizes.height)
 })
+
 // Scene
 const scene = new THREE.Scene()
 const house=new THREE.Group()
 scene.add(house)
 scene.fog=fog
+
+//Walls
+
 const walls=new THREE.Mesh(new THREE.BoxBufferGeometry(4,2.5,4),new THREE.MeshStandardMaterial({
     map:bricks,
     aoMap:ambientbricks,
@@ -63,10 +79,16 @@ const walls=new THREE.Mesh(new THREE.BoxBufferGeometry(4,2.5,4),new THREE.MeshSt
 walls.geometry.setAttribute('uv2',new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array,2))
 walls.position.y=0.550
 house.add(walls)
+
+//Roof
+
 const roof=new THREE.Mesh(new THREE.ConeBufferGeometry(3.5,1,4),new THREE.MeshStandardMaterial({color:'red'}))
 roof.position.y=1.8+0.5
 roof.rotation.y=Math.PI*0.25
 house.add(roof)
+
+//Door
+
 const door=new THREE.Mesh(new THREE.PlaneBufferGeometry(2,2,100,100),new THREE.MeshStandardMaterial({
     map:textures,
     transparent:true,
@@ -83,6 +105,9 @@ door.geometry.setAttribute('uv2',new THREE.Float32BufferAttribute(door.geometry.
 door.position.y=0.220
 door.position.z=2+0.01
 house.add(door)
+
+//Bushes
+
 const bushgeo=new THREE.SphereBufferGeometry(1,16,16)
 const bushmat=new THREE.MeshStandardMaterial({color:'lightgreen'})
 const bush1=new THREE.Mesh(bushgeo,bushmat)
@@ -95,6 +120,9 @@ const bush3=new THREE.Mesh(bushgeo,bushmat)
 bush3.scale.set(0.5,0.5,0.5)
 bush3.position.set(-1.5,-0.3,2.5)
 house.add(bush1,bush2,bush3)
+
+//Graves
+
 const graves=new THREE.Group()
 scene.add(graves)
 const gravegeo=new THREE.BoxBufferGeometry(0.6,0.8,0.2)
@@ -116,8 +144,9 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
 camera.position.z = 8
 const controls=new OrbitControls(camera,canvas)
 scene.add(camera)
-//const textures=textureloader.load('/textures/door/color.jpg')
-//Mesh(new THREE.TorusBufferGeometry(0.3,0.2,16,32),material)
+
+//Land
+
 const plane=new THREE.Mesh(new THREE.PlaneBufferGeometry(20,20),new THREE.MeshStandardMaterial({
     map:grass,
     aoMap:ambientgrass,
@@ -125,25 +154,38 @@ const plane=new THREE.Mesh(new THREE.PlaneBufferGeometry(20,20),new THREE.MeshSt
     roughnessMap:roughgrass
 }))
 plane.geometry.setAttribute('uv2',new THREE.Float32BufferAttribute(plane.geometry.attributes.uv.array,2))
-
 plane.rotation.x=-Math.PI*0.5
 plane.position.y=-0.65
-//sphere.castShadow=true
 plane.receiveShadow=true
 scene.add(plane)
+
+//Ambient Light
+
 const ambientlight=new THREE.AmbientLight('white',0.5)
 scene.add(ambientlight)
+
+//Directional Light GUI
+
 const directionallight=new THREE.DirectionalLight('white',0.5)
 directionallight.position.set(4,5,-2)
 scene.add(directionallight)
+
+//Ambient Light GUI
+
 gui.add(ambientlight,'intensity',0,10,0.1)
-gui.add(directionallight,'intensity',0,10,0.1)
 gui.add(ambientlight.position,'x',0,5,1).name('ambient x')
 gui.add(ambientlight.position,'y',0,5,1).name('ambient y')
 gui.add(ambientlight.position,'z',0,5,1).name('ambient z')
+
+//Directional Light GUI
+
+gui.add(directionallight,'intensity',0,10,0.1)
 gui.add(directionallight.position,'x',0,5,0.1).name('direct x')
 gui.add(directionallight.position,'y',0,5,0.1).name('direct y')
 gui.add(directionallight.position,'z',0,5,0.1).name('direct z')
+
+//PointLight
+
 const pointlight=new THREE.PointLight('#ff7d46',1,7)
 pointlight.position.set(0,1.9,2.7)
 pointlight.shadow.camera.far=7
@@ -151,6 +193,9 @@ pointlight.shadow.mapSize.width=256
 pointlight.shadow.mapSize.height=256
 
 scene.add(pointlight)
+
+// PointLight GUI
+
 gui.add(pointlight.position,'x',0,5,0.1).name('point x')
 gui.add(pointlight.position,'y',0,5,0.1).name('point y')
 gui.add(pointlight.position,'z',0,5,0.1).name('point z')
@@ -160,6 +205,10 @@ scene.add(gui)
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
+
+//Shadows
+
+
 renderer.shadowMap.type=THREE.PCFSoftShadowMap
 renderer.setClearColor('#262837')
 renderer.shadowMap.enabled=true
@@ -169,6 +218,7 @@ walls.castShadow=true
 bush1.castShadow=true
 bush2.castShadow=true
 bush3.castShadow=true
+
 
 renderer.setSize(sizes.width, sizes.height)
 renderer.render(scene, camera)
